@@ -2,7 +2,7 @@ import type {Request, Response, NextFunction} from 'express'
 import {ProductService, type Size} from '../service/product.service.js'
 
 export class ProductController{
-    static async geTProducts(req: Request, res: Response, next: NextFunction): Promise<void>{
+    static async getProducts(req: Request, res: Response, next: NextFunction): Promise<void>{
         const row = await ProductService.getAllProducts();
         res.status(200).send(row);
     }
