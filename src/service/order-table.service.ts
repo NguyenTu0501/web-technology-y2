@@ -16,11 +16,7 @@ export interface OrderBody{
 
 export class OrderTableService {
     static async getAllTables(): Promise<OrderTableDTO[]> {
-        // Seed data can be run more than once. Show the first row for each
-        // table name so duplicate seed rows do not appear as extra tables.
-        const query = "SELECT O.* FROM order_tables AS O "+
-                      "JOIN (SELECT MIN(id) AS id FROM order_tables GROUP BY table_name) AS T ON T.id = O.id "+
-                      "ORDER BY O.id";
+        const query = "SELECT * FROM order_tables";
         const [row] = await getPool().query<OrderTableDTO[]>(query);
         return row;
     };
