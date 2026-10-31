@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f6f7f4">
+  <title>VKU Coffee Shop</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <aside class="sidebar">
+    <a class="brand" href="#"><span class="brand-mark">V</span><span>VKU Coffee Shop<small>COFFEE SHOP MANAGEMENT</small></span></a>
+    <p class="nav-label">TỔNG QUAN</p>
+    <a class="nav-item active" href="#tables"><span>▦</span> Bàn ăn</a>
+    <a class="nav-item" href="#products"><span>◈</span> Thực đơn</a>
+    <div class="sidebar-bottom"><span class="avatar">QL</span><span>Quản lý<small>Quản trị viên</small></span><span class="dots">···</span></div>
+  </aside>
+
+  <main class="main">
+    <header class="topbar"><div><p class="eyebrow">KHÔNG GIAN LÀM VIỆC</p><h1>VKU Coffee Shop</h1></div><div class="top-actions"><span id="today"></span><button class="language-toggle" id="language-toggle" type="button" aria-label="Switch language">EN</button><span class="live"><i></i> Đang hoạt động</span></div></header>
+    <div id="notice" class="notice" role="status"></div>
+    <section class="stats" aria-label="Tổng quan">
+      <article class="stat-card"><span class="stat-icon green">▦</span><div><p>Tổng số bàn</p><strong id="stat-total">—</strong></div><span class="stat-note">Bàn phục vụ</span></article>
+      <article class="stat-card"><span class="stat-icon mint">✓</span><div><p>Bàn trống</p><strong id="stat-free">—</strong></div><span class="stat-note">Sẵn sàng đón khách</span></article>
+      <article class="stat-card"><span class="stat-icon orange">◈</span><div><p>Món trong thực đơn</p><strong id="stat-products">—</strong></div><span class="stat-note">Đang kinh doanh</span></article>
+    </section>
+
+    <section class="panel" id="tables">
+      <div class="section-head"><div><p class="eyebrow">SẮP XẾP KHÔNG GIAN</p><h2>Danh sách bàn</h2><p class="subtext">Theo dõi tình trạng và phục vụ từng bàn.</p></div><button class="primary" id="add-table">＋ Thêm bàn</button></div>
+      <div class="toolbar"><div class="filters"><button class="filter active" data-filter="all">Tất cả <b id="count-all">0</b></button><button class="filter" data-filter="free">Bàn trống <b id="count-free">0</b></button><button class="filter" data-filter="busy">Đang phục vụ <b id="count-busy">0</b></button></div><button class="icon-button" id="refresh" title="Tải lại">↻</button></div>
+      <div class="table-grid" id="table-grid"><div class="loading">Đang tải danh sách bàn…</div></div>
+    </section>
+
+    <section class="panel products-panel" id="products">
+      <div class="section-head"><div><p class="eyebrow">DANH MỤC MÓN</p><h2>Thực đơn</h2><p class="subtext">Quản lý tên món, kích cỡ và giá bán.</p></div><button class="primary" id="add-product">＋ Thêm món</button></div>
+      <div class="product-tools"><label class="search">⌕ <input id="search" type="search" placeholder="Tìm món ăn…"></label><span id="product-count" class="muted"></span></div>
+      <div class="table-wrap"><table><thead><tr><th>TÊN MÓN</th><th>MÔ TẢ</th><th>KÍCH CỠ</th><th>GIÁ BÁN</th><th></th></tr></thead><tbody id="product-list"><tr><td colspan="5" class="loading">Đang tải thực đơn…</td></tr></tbody></table></div>
+    </section>
+    <footer>Không gian quản lý <span>•</span> VKU Coffee Shop</footer>
+  </main>
+
+  <dialog id="table-dialog"><form method="dialog" id="table-form"><div class="dialog-head"><div><p class="eyebrow">THÔNG TIN BÀN</p><h2 id="table-dialog-title">Thêm bàn mới</h2></div><button class="close" value="cancel" aria-label="Đóng">×</button></div><input type="hidden" name="id"><label>Tên bàn<input name="name" required placeholder="Ví dụ: Bàn 01"></label><label>Sức chứa (người)<input name="size" type="number" min="1" value="4" required></label><div class="dialog-actions"><button class="secondary" value="cancel">Huỷ</button><button class="primary" id="save-table" value="default">Lưu bàn</button></div></form></dialog>
+  <dialog id="product-dialog"><form method="dialog" id="product-form"><div class="dialog-head"><div><p class="eyebrow">THÔNG TIN MÓN</p><h2 id="product-dialog-title">Thêm món mới</h2></div><button class="close" value="cancel" aria-label="Đóng">×</button></div><input type="hidden" name="id"><label>Tên món<input name="name" required placeholder="Ví dụ: Cà phê sữa"></label><label>Mô tả<textarea name="description" rows="3" placeholder="Mô tả ngắn về món"></textarea></label><div class="form-row"><label>Giá bán (₫)<input name="price" type="number" min="0" step="1000" required placeholder="35000"></label><label>Kích cỡ<select name="size"><option>M</option><option>L</option><option>XL</option><option>XXL</option></select></label></div><div class="dialog-actions"><button class="secondary" value="cancel">Huỷ</button><button class="primary" id="save-product" value="default">Lưu món</button></div></form></dialog>
+  <dialog id="order-dialog"><form method="dialog" id="order-form"><div class="dialog-head"><div><p class="eyebrow">PHỤC VỤ</p><h2 id="order-title">Gọi món</h2></div><button class="close" value="cancel" aria-label="Đóng">×</button></div><input name="tableId" type="hidden"><div id="order-products" class="order-products"></div><p class="muted order-help">Chọn một hoặc nhiều món để thêm vào bàn.</p><div class="dialog-actions"><button class="secondary" value="cancel">Huỷ</button><button class="primary" id="save-order" value="default">Thêm món đã chọn</button></div></form></dialog>
+  <dialog id="items-dialog"><div class="dialog-content"><div class="dialog-head"><div><p class="eyebrow">MÓN ĐÃ GỌI</p><h2 id="items-title">Các món đang phục vụ</h2></div><button class="close" id="close-items" aria-label="Đóng">×</button></div><div id="items-list" class="ordered-items"></div><div class="dialog-actions"><button class="secondary" id="done-items">Đóng</button></div></div></dialog>
+  <script src="/app.js" defer></script>
+</body>
+</html>

@@ -19,15 +19,15 @@ export class ProductService {
     };
 
     static async getSearchProducts(productName: string): Promise<ProductDTO[]>{
-        const query = "SELECT * FROM products as P WHERE P.product_name LIKE %?%";
-        const [row] = await getPool().query<ProductDTO[]>(query,[productName]);
+        const query = "SELECT * FROM products as P WHERE P.product_name LIKE ?";
+        const [row] = await getPool().query<ProductDTO[]>(query,[`%${productName}%`]);
         return row;
     };
 
     static async createProduct({name, description, price, size}:
          {name: string, description: string, price: number, size: Size}): Promise<ResultSetHeader>
     {
-        const insertQuery = "INSERT INTO products(product_name, product_description, product_price, product_size "+
+        const insertQuery = "INSERT INTO products(product_name, product_description, product_price, product_size) "+
                             "VALUES (?,?,?,?)";
         const [result] = await getPool().query<ResultSetHeader>(insertQuery,[name,description,price,size]);
         return result;

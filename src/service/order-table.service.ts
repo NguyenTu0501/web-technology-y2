@@ -36,7 +36,7 @@ export class OrderTableService {
     static async updateTable(id: number, {name, size}: {name: string, size: number}): Promise<ResultSetHeader> {
         const updateQuery = "UPDATE order_tables as O "+
                             "SET O.table_name = ?, "+
-                            "O.table_size = ?, "+
+                            "O.table_size = ? "+
                             "WHERE O.id = ?";
         const [result] = await getPool().query<ResultSetHeader>(updateQuery,[name,size,id]);
         return result;
@@ -58,7 +58,10 @@ export class OrderTableService {
         const connection: PoolConnection = await getPool().getConnection();
         try{
             await connection.beginTransaction();
-            const query = "INSERT INTO table_items(table_id, product_id) VALUES (?,?)";
+            // The table_items composite key prevents duplicate products per table.
+            // Treat calling an already-added product as an idempotent operation.
+            const query = "INSERT INTO table_items(table_id, product_id) VALUES (?,?) "+
+                          "ON DUPLICATE KEY UPDATE table_id = VALUES(table_id)";
             for(const product_id of product_ids){
                 await connection.query(query,[table_id,product_id]);
             }
@@ -74,15 +77,15 @@ export class OrderTableService {
     }
 
     static async removeItemFromTable(table_id: number, product_id: number): Promise<ResultSetHeader>{
-        const query = "DELETE FROM table_items as I where I.table_id = ? and I.product_id = ?";
+        const query = "DELETE I FROM table_items AS I WHERE I.table_id = ? AND I.product_id = ?";
         const [result] = await getPool().query<ResultSetHeader>(query,[table_id,product_id]);
         return result;
     }
 
     static async getProductInItemOnTable(table_id: number): Promise<ProductDTO[]>{
-        const query =   "SELECT * from products as P "+
+        const query =   "SELECT P.* from products as P "+
                         "JOIN table_items as I on I.product_id = P.id "+
-                        "WHERE I.table_id = ?";
+                        "WHERE I.table_id = ? ORDER BY P.product_name";
         const [row] = await getPool().query<ProductDTO[]>(query,[table_id]);
         return row;
     }
