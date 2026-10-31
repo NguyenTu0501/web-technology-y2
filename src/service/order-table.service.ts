@@ -1,22 +1,17 @@
 import type {RowDataPacket, ResultSetHeader, PoolConnection} from 'mysql2/promise'
 import {getPool} from '../config/database.js'
 import {type ProductDTO} from './product.service.js'
-import { totalmem } from 'node:os';
 
 export interface OrderTableDTO extends RowDataPacket{
     id: number,
     table_name: string,
-    table_size: number // How many people can sit
+    table_size: number, // How many people can sit
     is_available: boolean
 }
 
-export interface OrderItemDTO extends RowDataPacket{
-    table_id: number,
-    product_id: number
-}
-
 export interface OrderBody{
-    items: OrderItemDTO[]
+    table_id: number,
+    product_ids: number[] // productId
 }
 
 export class OrderTableService {
@@ -59,12 +54,12 @@ export class OrderTableService {
         return result;
     }
 
-    static async addItemsForTable({items}: OrderBody){
+    static async addItemsForTable({table_id,product_ids}: OrderBody){
         const connection: PoolConnection = await getPool().getConnection();
         try{
             await connection.beginTransaction();
             const query = "INSERT INTO table_items(table_id, product_id) VALUES (?,?)";
-            for(const {table_id, product_id} of items){
+            for(const product_id of product_ids){
                 await connection.query(query,[table_id,product_id]);
             }
             await connection.commit();
