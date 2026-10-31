@@ -58,7 +58,7 @@ export class OrderTableController{
         res.status(200).send({message: "Unmarked table"});
     }
 
-    static async addItemForTable(req: Request, res: Response, next: NextFunction): Promise<void>{
+    static async addItemsForTable(req: Request, res: Response, next: NextFunction): Promise<void>{
         const {table_id, product_ids} = req.body as {table_id: number, product_ids: number[]};
         await OrderTableService.addItemsForTable({table_id, product_ids});
         res.status(200).send({message: "Added"});
